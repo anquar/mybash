@@ -174,8 +174,12 @@ change_shell() {
     fi
 }
 
-setup_git() {
+more_setup() {
+    # 设置 git 的默认编辑器为 vim
     git config --global core.editor "vim"
+
+    # 设置时区为 上海
+    timedatectl set-timezone Asia/Shanghai
 }
 
 
@@ -186,6 +190,6 @@ install_font
 setup_zsh_theme
 install_other_tool
 change_shell
-setup_git
+more_setup
 exit
 
