@@ -119,3 +119,7 @@ else
     echo -e "Something is wrong"
 fi
 exit
+
+
+git config --global core.editor "vim"
+
