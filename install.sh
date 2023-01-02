@@ -175,8 +175,9 @@ change_shell() {
 }
 
 more_setup() {
-    # 设置 git 的默认编辑器为 vim
+    # 设置 git
     git config --global core.editor "vim"
+    git config --global pull.rebase true
 
     # 设置时区为 上海
     timedatectl set-timezone Asia/Shanghai
