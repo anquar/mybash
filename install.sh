@@ -73,7 +73,7 @@ install_ohmyzsh_with_plugins() {
         LOGW "oh-my-zsh is already installed\n"
         git -C ${INSTALL_PATH}/oh-my-zsh remote set-url origin https://github.com/ohmyzsh/ohmyzsh.git
     elif [ -d ~/.oh-my-zsh ]; then
-        LOGI "oh-my-zsh in already installed at '~/.oh-my-zsh'. Moving it to '/path/to/install_path/oh-my-zsh'\n"
+        LOGI "oh-my-zsh in already installed at '~/.oh-my-zsh'. Moving it to '${INSTALL_PATH}/oh-my-zsh'\n"
         export ZSH="${INSTALL_PATH}/oh-my-zsh"
         mv ~/.oh-my-zsh ${INSTALL_PATH}/oh-my-zsh
         git -C ${INSTALL_PATH}/oh-my-zsh remote set-url origin https://github.com/ohmyzsh/ohmyzsh.git
