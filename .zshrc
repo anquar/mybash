@@ -1,15 +1,15 @@
-################# DO NOT MODIFY THIS FILE #######################
-#### PLACE YOUR CONFIGS IN ~/.config/wuaq-zsh/zshrc FOLDER ######
-#################################################################
+################# DO NOT MODIFY THIS FILE ###################
+#### PLACE YOUR CONFIGS IN ~/.config/muyz/zshrc FOLDER ######
+#############################################################
 
 # Your original .zshrc is backed up at ~/.zshrc-backup-%y-%m-%d
 
 
 # Load zsh configurations
-source "$HOME/.config/wuaq-zsh/ezshrc.zsh"
+source "$HOME/.config/muyz/ezshrc.zsh"
 
 # Place all of your personal configurations over there
-ZSH_CONFIGS_DIR="$HOME/.config/wuaq-zsh/zshrc"
+ZSH_CONFIGS_DIR="$HOME/.config/muyz/zshrc"
 
 if [ "$(ls -A $ZSH_CONFIGS_DIR)" ]; then
     for file in "$ZSH_CONFIGS_DIR"/*; do

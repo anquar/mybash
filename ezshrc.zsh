@@ -3,7 +3,7 @@ export TERM="xterm-256color"
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH=$HOME/.config/wuaq-zsh/oh-my-zsh
+export ZSH=$HOME/.config/muyz/oh-my-zsh
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
@@ -97,8 +97,6 @@ plugins=(
     )
 #plugins+=(zsh-nvm)
 
-# source $ZSH/oh-my-zsh.sh          # This is now run in .zshrc after importing user configs from ~/.config/wuaq-zsh/zshrc/* files 
-
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -131,12 +129,12 @@ plugins=(
 # Add to PATH to Install and run programs with "pip install --user"
 export PATH=$PATH:~/.local/bin
 
-export PATH=$PATH:~/.config/wuaq-zsh/bin
+export PATH=$PATH:~/.config/muyz/bin
 
 NPM_PACKAGES="${HOME}/.npm"
 PATH="$NPM_PACKAGES/bin:$PATH"
 
-[[ -s "$HOME/.config/wuaq-zsh/marker/marker.sh" ]] && source "$HOME/.config/wuaq-zsh/marker/marker.sh"
+[[ -s "$HOME/.config/muyz/marker/marker.sh" ]] && source "$HOME/.config/muyz/marker/marker.sh"
 
 autoload -U compinit && compinit -C -d ~/.cache/zsh/.zcompdump        # zsh-completions
 # autoload bashcompinit                 # bash completions
@@ -148,7 +146,7 @@ SAVEHIST=50000      #save upto 50,000 lines in history. oh-my-zsh default is 10,
 #setopt hist_ignore_all_dups     # dont record duplicated entries in history during a single session
 
 alias myip="wget -qO- https://wtfismyip.com/text"	# quickly show external ip address
-alias l="ls -lah"
+alias l="ls -lAhrtF"    # show all except . .. , sort by recent, / at the end of folders
 alias e="exit"
 
 

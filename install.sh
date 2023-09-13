@@ -5,8 +5,6 @@ green='\033[0;32m'
 yellow='\033[0;33m'
 plain='\033[0m'
 
-
-# add some basic function here
 function LOGW() {
     echo -e "${yellow}[W] $* ${plain}"
 }
@@ -36,14 +34,13 @@ elif cat /proc/version | grep -Eqi "ubuntu"; then
 elif cat /proc/version | grep -Eqi "centos|red hat|redhat"; then
     release="centos"
 else
-    LOGE "未检测到系统版本，停止运行!\n" && exit 1
+    LOGE "System version not detected, stopped running!\n" && exit 1
 fi
 
 
-# check github accessable
-github_access_status=$(curl -s -m 1 -IL github.com|grep 200)
+github_access_status=$(curl -s -m 1 -IL github.com | grep 200)
 if [ "$github_access_status" == "" ];then
-    LOGE "网络情况不满足，请检查后重试!\n" && exit 1
+    LOGE "The network condition is not satisfactory, please check and try again.!\n" && exit 1
 fi
 
 
@@ -63,7 +60,7 @@ backup_zshrc() {
 }
 
 
-INSTALL_PATH="$HOME/.config/wuaq-zsh"
+INSTALL_PATH="$HOME/.config/muyz"
 mkdir -p ${INSTALL_PATH}
 
 
@@ -84,8 +81,8 @@ install_ohmyzsh_with_plugins() {
     cp -f .zshrc ~/
     cp -f ezshrc.zsh ${INSTALL_PATH}/
 
-    mkdir -p ${INSTALL_PATH}/zshrc         # PLACE YOUR ZSHRC CONFIGURATIONS OVER THERE
-    mkdir -p ~/.cache/zsh/                # this will be used to store .zcompdump zsh completion cache files which normally clutter $HOME
+    mkdir -p ${INSTALL_PATH}/zshrc # PLACE YOUR ZSHRC CONFIGURATIONS OVER THERE
+    mkdir -p ~/.cache/zsh/ # this will be used to store .zcompdump zsh completion cache files which normally clutter $HOME
 
     if [ -f ~/.zcompdump ]; then
         mv ~/.zcompdump* ~/.cache/zsh/
@@ -167,7 +164,7 @@ install_other_tool() {
 
 
 change_shell() {
-    if chsh -s $(which zsh) && /bin/zsh -i -c 'omz update'; then
+    if chsh -s $(which zsh) && ${SHELL} -i -c 'omz update'; then
         LOGI "Installation Successful, exit terminal and enter a new session"
     else
         LOGE "Something is wrong"
@@ -175,11 +172,12 @@ change_shell() {
 }
 
 more_setup() {
-    # 设置 git
+    # setting git
     git config --global core.editor "vim"
     git config --global pull.rebase true
+    git config --global user.email "wuaqcn@qq.com"
+    git config --global user.name "muyz"
 
-    # 设置时区为 上海
     timedatectl set-timezone Asia/Shanghai
 }
 
@@ -193,4 +191,3 @@ install_other_tool
 change_shell
 more_setup
 exit
-
