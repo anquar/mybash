@@ -46,9 +46,9 @@ fi
 
 install_base() {
     if [[ x"${release}" == x"centos" ]]; then
-        yum install wget git vim zsh util-linux-user -y
+        yum install wget git tar vim zsh util-linux-user -y
     else
-        apt install wget git vim zsh passwd -y
+        apt install wget git tar vim zsh passwd -y
     fi
 }
 
