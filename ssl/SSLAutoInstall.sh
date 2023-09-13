@@ -121,7 +121,7 @@ set_cert_domain() {
     contain "${currentCerts[*]}" "${domain}"
     if [ $? -eq 0 ]; then
         local certInfo=$(~/.acme.sh/acme.sh --list)
-        LOGE "当前环境已有对应域名证书,不可重复申请,当前证书详情:"
+        LOGI "当前环境已有对应域名证书,不可重复申请,当前证书详情:"
         LOGI "$certInfo"
         confirm "是否继续进行证书安装[y/n]" "n"
         if [ $? -ne 0 ]; then
