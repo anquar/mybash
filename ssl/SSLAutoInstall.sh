@@ -5,7 +5,7 @@
 # Some constans here
 CERT_DOMAIN=''
 ONLY_INSTALL_CERT=''
-CERT_DEFAULT_INSTALL_PATH='/root/cert/'
+CERT_DEFAULT_INSTALL_PATH='/opt/cert'
 
 # Some basic settings here
 plain='\033[0m'
