@@ -195,10 +195,10 @@ ssl_cert_issue_by_cloudflare() {
         fi
 
         ~/.acme.sh/acme.sh --installcert -d ${CERT_DOMAIN} -d *.${CERT_DOMAIN} \
-        --ca-file /root/cert/${CERT_DOMAIN}/ca.cer \
-        --cert-file /root/cert/${CERT_DOMAIN}/${CERT_DOMAIN}.cer \
-        --key-file /root/cert/${CERT_DOMAIN}/${CERT_DOMAIN}.key \
-        --fullchain-file /root/cert/${CERT_DOMAIN}/fullchain.cer
+        --ca-file ${CERT_DEFAULT_INSTALL_PATH}/ca.cer \
+        --cert-file ${CERT_DEFAULT_INSTALL_PATH}/${CERT_DOMAIN}.cer \
+        --key-file ${CERT_DEFAULT_INSTALL_PATH}/${CERT_DOMAIN}.key \
+        --fullchain-file ${CERT_DEFAULT_INSTALL_PATH}/fullchain.cer
         if [ $? -ne 0 ]; then
             LOGE "证书安装失败,脚本退出"
             exit 1
