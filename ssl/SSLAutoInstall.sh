@@ -119,7 +119,7 @@ set_cert_domain() {
     # here we need to judge whether there exists cert already
     local currentCerts=($(~/.acme.sh/acme.sh --list | tail -n +2 | awk '{print $1}'))
     contain "${currentCerts[*]}" "${domain}"
-    if [ $? -ne 0 ]; then
+    if [ $? -eq 0 ]; then
         local certInfo=$(~/.acme.sh/acme.sh --list)
         LOGE "当前环境已有对应域名证书,不可重复申请,当前证书详情:"
         LOGI "$certInfo"
