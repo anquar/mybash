@@ -156,7 +156,7 @@ ssl_cert_issue_by_cloudflare() {
 
         set_cert_domain
 
-        if [ -n "$CF_Email" && -n "$CF_Key" ]; then
+        if [ -n "$CF_Email" -a -n "$CF_Key" ]; then
             LOGI "Cloudflare邮箱和秘钥环境变量已设置"
             LOGI "邮箱: $CF_Email"
             LOGI "秘钥: $CF_Key"
