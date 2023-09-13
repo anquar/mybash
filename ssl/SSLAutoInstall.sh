@@ -87,7 +87,6 @@ else
     LOGE "未检测到系统版本，请联系脚本作者!\n" && exit 1
 fi
 
-# function for user choice
 install_acme() {
     cd ~
     if [ -x ~/.acme.sh/acme.sh ]; then
@@ -104,25 +103,6 @@ install_acme() {
         fi
     fi
     return 0
-}
-
-# function for domain check
-domain_valid_check() {
-    local domain=""
-    read -p "请输入你的域名:" domain
-    LOGD "你输入的域名为:${domain},正在进行域名合法性校验..."
-    # here we need to judge whether there exists cert already
-    local currentCerts=($(~/.acme.sh/acme.sh --list | tail -n +2 | awk '{print $1}'))
-    contain "${currentCerts[*]}" "${domain}"
-    if [ $? -ne 0 ]; then
-        local certInfo=$(~/.acme.sh/acme.sh --list)
-        LOGE "域名合法性校验失败,当前环境已有对应域名证书,不可重复申请,当前证书详情:"
-        LOGI "$certInfo"
-        exit 1
-    else
-        LOGI "证书有效性校验通过..."
-        CERT_DOMAIN=${domain}
-    fi
 }
 
 # function for domain check
@@ -151,33 +131,10 @@ install_path_set() {
     CERT_DEFAULT_INSTALL_PATH=${InstallPath}
 }
 
-# function for cert issue entry
-ssl_cert_issue() {
-    local method=""
-    echo -E ""
-    LOGI "该脚本目前提供两种方式实现证书签发"
-    LOGI "方式1:acme standalone mode,需要保持端口开放"
-    LOGI "方式2:acme DNS API mode,需要提供Cloudflare Global API Key"
-    LOGI "如域名属于免费域名,则推荐使用方式1进行申请"
-    LOGI "如域名非免费域名且使用Cloudflare进行解析使用方式2进行申请"
-    read -p "请选择你想使用的方式,请输入数字1或者2后回车": method
-    LOGI "你所使用的方式为${method}"
-
-    if [ "${method}" == "1" ]; then
-        ssl_cert_issue_standalone
-    elif [ "${method}" == "2" ]; then
-        ssl_cert_issue_by_cloudflare
-    else
-        LOGE "输入无效,请检查你的输入,脚本将退出..."
-        exit 1
-    fi
-}
-
-# method for DNS API mode
 ssl_cert_issue_by_cloudflare() {
     echo -E ""
     LOGI "该脚本将使用Acme脚本申请证书,使用时需保证:"
-    LOGI "1.知晓Cloudflare 注册邮箱"
+    LOGI "1.知晓Cloudflare注册邮箱"
     LOGI "2.知晓Cloudflare Global API Key"
     LOGI "3.域名已通过Cloudflare进行解析到当前服务器"
     confirm "我已确认以上内容[y/n]" "y"
@@ -187,19 +144,16 @@ ssl_cert_issue_by_cloudflare() {
             LOGE "无法安装acme,请检查错误日志"
             exit 1
         fi
-        # creat a directory for install cert
+
         install_path_set
+
         # Set DNS API
         CF_GlobalKey=""
         CF_AccountEmail=""
 
-        # domain valid check
-        domain_valid_check
-        LOGD "请设置API密钥:"
-        read -p "Input your key here:" CF_GlobalKey
+        read -p "请输入你的CF秘钥:" CF_GlobalKey
         LOGD "你的API密钥为:${CF_GlobalKey}"
-        LOGD "请设置注册邮箱:"
-        read -p "Input your email here:" CF_AccountEmail
+        read -p "请输入你的CF邮箱:" CF_AccountEmail
         LOGD "你的注册邮箱为:${CF_AccountEmail}"
         ~/.acme.sh/acme.sh --set-default-ca --server letsencrypt
         if [ $? -ne 0 ]; then
