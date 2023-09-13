@@ -4,6 +4,7 @@
 
 # Some constans here
 CERT_DOMAIN=''
+ONLY_INSTALL_CERT=''
 CERT_DEFAULT_INSTALL_PATH='/root/cert/'
 
 # Some basic settings here
@@ -95,6 +96,8 @@ set_cert_install_path() {
         LOGI "输入路径为空,将采用默认路径:${CERT_DEFAULT_INSTALL_PATH}"
     fi
 
+    InstallPath="${InstallPath}/${CERT_DOMAIN}"
+
     if [ ! -d "${InstallPath}" ]; then
         mkdir -p "${InstallPath}"
     else
@@ -120,9 +123,17 @@ set_cert_domain() {
         local certInfo=$(~/.acme.sh/acme.sh --list)
         LOGE "当前环境已有对应域名证书,不可重复申请,当前证书详情:"
         LOGI "$certInfo"
-        exit 1
+        confirm "是否继续进行证书安装[y/n]" "n"
+        if [ $? -ne 0 ]; then
+            LOGI "脚本退出..."
+            exit 1
+        else
+            LOGI "继续安装证书..."
+            ONLY_INSTALL_CERT="true"
+            CERT_DOMAIN=${domain}
+        fi
     else
-        LOGI "证书有效性校验通过..."
+        LOGI "域名合法性校验通过..."
         CERT_DOMAIN=${domain}
     fi
 }
@@ -152,34 +163,37 @@ ssl_cert_issue_by_cloudflare() {
             exit 1
         fi
 
-        set_cert_install_path
-
         set_cert_domain
 
-        if [ -n "$CF_Email" -a -n "$CF_Key" ]; then
-            LOGI "Cloudflare邮箱和秘钥环境变量已设置"
-            LOGI "邮箱: $CF_Email"
-            LOGI "秘钥: $CF_Key"
-            confirm "我要重新设置[y/n]" "n"
-            if [ $? -ne 0 ]; then
+        set_cert_install_path
+
+        if [ ! -n "${ONLY_INSTALL_CERT}" ]; then
+            if [ -n "$CF_Email" -a -n "$CF_Key" ]; then
+                LOGI "Cloudflare邮箱和秘钥环境变量已设置"
+                LOGI "邮箱: $CF_Email"
+                LOGI "秘钥: $CF_Key"
+                confirm "我要重新设置[y/n]" "n"
+                if [ $? -ne 0 ]; then
+                    set_cloudflare_dns_api
+                fi
+            else
                 set_cloudflare_dns_api
             fi
-        else
-            set_cloudflare_dns_api
+
+            ~/.acme.sh/acme.sh --set-default-ca --server letsencrypt
+            if [ $? -ne 0 ]; then
+                LOGE "修改默认CA为Lets'Encrypt失败,脚本退出"
+                exit 1
+            fi
+            ~/.acme.sh/acme.sh --issue --dns dns_cf -d ${CERT_DOMAIN} -d *.${CERT_DOMAIN} --log
+            if [ $? -ne 0 ]; then
+                LOGE "证书签发失败,脚本退出"
+                exit 1
+            else
+                LOGI "证书签发成功,安装中..."
+            fi
         fi
 
-        ~/.acme.sh/acme.sh --set-default-ca --server letsencrypt
-        if [ $? -ne 0 ]; then
-            LOGE "修改默认CA为Lets'Encrypt失败,脚本退出"
-            exit 1
-        fi
-        ~/.acme.sh/acme.sh --issue --dns dns_cf -d ${CERT_DOMAIN} -d *.${CERT_DOMAIN} --log
-        if [ $? -ne 0 ]; then
-            LOGE "证书签发失败,脚本退出"
-            exit 1
-        else
-            LOGI "证书签发成功,安装中..."
-        fi
         ~/.acme.sh/acme.sh --installcert -d ${CERT_DOMAIN} -d *.${CERT_DOMAIN} \
         --ca-file /root/cert/${CERT_DOMAIN}/ca.cer \
         --cert-file /root/cert/${CERT_DOMAIN}/${CERT_DOMAIN}.cer \
