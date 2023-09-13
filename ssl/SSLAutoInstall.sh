@@ -3,7 +3,6 @@
 # This shell script is used for issue a Let'sEncrypt Cert And installation more convenitenly
 
 # Some constans here
-OS_CHECK=''
 CERT_DOMAIN=''
 CERT_DEFAULT_INSTALL_PATH='/root/cert/'
 
@@ -61,30 +60,10 @@ contain() {
 # Check whether you are root
 LOGI "权限检查..."
 currentUser=$(whoami)
-LOGD "currentUser is $currentUser"
+LOGD "当前用户为 $currentUser"
 if [ $currentUser != "root" ]; then
     LOGE "$Attention:请检查是否为root用户, please check whether you are root"
     exit 1
-fi
-
-# check OS type
-LOGI "系统类型检查..."
-if [[ -f /etc/redhat-release ]]; then
-    OS_CHECK="centOS_CHECK"
-elif cat /etc/issue | grep -Eqi "debian"; then
-    OS_CHECK="debian"
-elif cat /etc/issue | grep -Eqi "ubuntu"; then
-    OS_CHECK="ubuntu"
-elif cat /etc/issue | grep -Eqi "centOS_CHECK|red hat|redhat"; then
-    OS_CHECK="centos"
-elif cat /proc/version | grep -Eqi "debian"; then
-    OS_CHECK="debian"
-elif cat /proc/version | grep -Eqi "ubuntu"; then
-    OS_CHECK="ubuntu"
-elif cat /proc/version | grep -Eqi "centos|red hat|redhat"; then
-    OS_CHECK="centos"
-else
-    LOGE "未检测到系统版本，请联系脚本作者!\n" && exit 1
 fi
 
 install_acme() {
@@ -105,8 +84,7 @@ install_acme() {
     return 0
 }
 
-# function for domain check
-install_path_set() {
+set_cert_install_path() {
     cd ~
     local InstallPath=''
     read -p "请输入证书安装路径:" InstallPath
@@ -131,12 +109,41 @@ install_path_set() {
     CERT_DEFAULT_INSTALL_PATH=${InstallPath}
 }
 
+set_cert_domain() {
+    local domain=""
+    read -p "请输入你的根域名:" domain
+    LOGD "你输入的域名为:${domain},正在进行域名合法性校验..."
+    # here we need to judge whether there exists cert already
+    local currentCerts=($(~/.acme.sh/acme.sh --list | tail -n +2 | awk '{print $1}'))
+    contain "${currentCerts[*]}" "${domain}"
+    if [ $? -ne 0 ]; then
+        local certInfo=$(~/.acme.sh/acme.sh --list)
+        LOGE "当前环境已有对应域名证书,不可重复申请,当前证书详情:"
+        LOGI "$certInfo"
+        exit 1
+    else
+        LOGI "证书有效性校验通过..."
+        CERT_DOMAIN=${domain}
+    fi
+}
+
+set_cloudflare_dns_api() {
+    local CF_GlobalKey=''
+    local CF_AccountEmail=''
+    read -p "请输入你的CF秘钥:" CF_GlobalKey
+    LOGD "你的API密钥为:${CF_GlobalKey}"
+    read -p "请输入你的CF邮箱:" CF_AccountEmail
+    LOGD "你的注册邮箱为:${CF_AccountEmail}"
+    export CF_Key="${CF_GlobalKey}"
+    export CF_Email=${CF_AccountEmail}
+}
+
 ssl_cert_issue_by_cloudflare() {
     echo -E ""
     LOGI "该脚本将使用Acme脚本申请证书,使用时需保证:"
     LOGI "1.知晓Cloudflare注册邮箱"
     LOGI "2.知晓Cloudflare Global API Key"
-    LOGI "3.域名已通过Cloudflare进行解析到当前服务器"
+    LOGI "3.根域名已通过Cloudflare进行解析到当前服务器"
     confirm "我已确认以上内容[y/n]" "y"
     if [ $? -eq 0 ]; then
         install_acme
@@ -145,23 +152,27 @@ ssl_cert_issue_by_cloudflare() {
             exit 1
         fi
 
-        install_path_set
+        set_cert_install_path
 
-        # Set DNS API
-        CF_GlobalKey=""
-        CF_AccountEmail=""
+        set_cert_domain
 
-        read -p "请输入你的CF秘钥:" CF_GlobalKey
-        LOGD "你的API密钥为:${CF_GlobalKey}"
-        read -p "请输入你的CF邮箱:" CF_AccountEmail
-        LOGD "你的注册邮箱为:${CF_AccountEmail}"
+        if [ -n "$CF_Email" && -n "$CF_Key" ]; then
+            LOGI "Cloudflare邮箱和秘钥环境变量已设置"
+            LOGI "邮箱: $CF_Email"
+            LOGI "秘钥: $CF_Key"
+            confirm "我要重新设置[y/n]" "n"
+            if [ $? -ne 0 ]; then
+                set_cloudflare_dns_api
+            fi
+        else
+            set_cloudflare_dns_api
+        fi
+
         ~/.acme.sh/acme.sh --set-default-ca --server letsencrypt
         if [ $? -ne 0 ]; then
             LOGE "修改默认CA为Lets'Encrypt失败,脚本退出"
             exit 1
         fi
-        export CF_Key="${CF_GlobalKey}"
-        export CF_Email=${CF_AccountEmail}
         ~/.acme.sh/acme.sh --issue --dns dns_cf -d ${CERT_DOMAIN} -d *.${CERT_DOMAIN} --log
         if [ $? -ne 0 ]; then
             LOGE "证书签发失败,脚本退出"
@@ -169,9 +180,11 @@ ssl_cert_issue_by_cloudflare() {
         else
             LOGI "证书签发成功,安装中..."
         fi
-        ~/.acme.sh/acme.sh --installcert -d ${CERT_DOMAIN} -d *.${CERT_DOMAIN} --ca-file /root/cert/ca.cer \
-        --cert-file /root/cert/${CERT_DOMAIN}.cer --key-file /root/cert/${CERT_DOMAIN}.key \
-        --fullchain-file /root/cert/fullchain.cer
+        ~/.acme.sh/acme.sh --installcert -d ${CERT_DOMAIN} -d *.${CERT_DOMAIN} \
+        --ca-file /root/cert/${CERT_DOMAIN}/ca.cer \
+        --cert-file /root/cert/${CERT_DOMAIN}/${CERT_DOMAIN}.cer \
+        --key-file /root/cert/${CERT_DOMAIN}/${CERT_DOMAIN}.key \
+        --fullchain-file /root/cert/${CERT_DOMAIN}/fullchain.cer
         if [ $? -ne 0 ]; then
             LOGE "证书安装失败,脚本退出"
             exit 1
