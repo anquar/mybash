@@ -38,17 +38,19 @@ else
 fi
 
 
+# check network
 github_access_status=$(curl -s -m 1 -IL github.com | grep 200)
 if [ "$github_access_status" == "" ];then
     LOGE "The network condition is not satisfactory, please check and try again.!\n" && exit 1
 fi
 
 
-install_base() {
+install_base_tool() {
+    LOGI "Installing base tool\n"
     if [[ x"${release}" == x"centos" ]]; then
-        yum install wget git tar vim zsh util-linux-user -y
+        yum install -q wget git tar vim zsh util-linux-user -y
     else
-        apt install wget git tar vim zsh passwd -y
+        apt install -qq wget git tar vim zsh passwd -y
     fi
 }
 
@@ -62,6 +64,7 @@ backup_zshrc() {
 
 INSTALL_PATH="$HOME/.config/muyz"
 mkdir -p ${INSTALL_PATH}
+LOGI "Installing to ${INSTALL_PATH}\n"
 
 
 install_ohmyzsh_with_plugins() {
@@ -79,7 +82,7 @@ install_ohmyzsh_with_plugins() {
     fi
 
     cp -f .zshrc ~/
-    cp -f ezshrc.zsh ${INSTALL_PATH}/
+    cp -f config.zsh ${INSTALL_PATH}/
 
     mkdir -p ${INSTALL_PATH}/zshrc # PLACE YOUR ZSHRC CONFIGURATIONS OVER THERE
     mkdir -p ~/.cache/zsh/ # this will be used to store .zcompdump zsh completion cache files which normally clutter $HOME
@@ -182,7 +185,7 @@ more_setup() {
 }
 
 
-install_base
+install_base_tool
 backup_zshrc
 install_ohmyzsh_with_plugins
 install_font

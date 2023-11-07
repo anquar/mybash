@@ -6,7 +6,7 @@
 
 
 # Load zsh configurations
-source "$HOME/.config/muyz/ezshrc.zsh"
+source "$HOME/.config/muyz/config.zsh"
 
 # Place all of your personal configurations over there
 ZSH_CONFIGS_DIR="$HOME/.config/muyz/zshrc"
@@ -26,4 +26,4 @@ source $ZSH/oh-my-zsh.sh
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export FZF_DEFAULT_OPS="--extended"
 
-alias k="k -h"       # show human readable file sizes, in kb, mb etc
+alias k="k -h" # show human readable file sizes, in kb, mb etc
