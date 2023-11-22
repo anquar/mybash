@@ -44,6 +44,10 @@ confirm() {
 
 # function for array contain
 contain() {
+    if [ -z "$1" ]; then
+        return 1
+    fi
+    LOGD "参数1=$1,参数2=$2"
     narr=($1)
     if [[ x"${narr}" == x"" ]]; then
         return 0
@@ -185,7 +189,7 @@ ssl_cert_issue_by_cloudflare() {
                 LOGE "修改默认CA为Lets'Encrypt失败,脚本退出"
                 exit 1
             fi
-            ~/.acme.sh/acme.sh --issue --dns dns_cf -d ${CERT_DOMAIN} -d *.${CERT_DOMAIN} --log
+            ~/.acme.sh/acme.sh --issue --insecure --dns dns_cf -d ${CERT_DOMAIN} -d *.${CERT_DOMAIN} --log
             if [ $? -ne 0 ]; then
                 LOGE "证书签发失败,脚本退出"
                 exit 1
