@@ -26,24 +26,22 @@ fi
 if ! command -v zsh &> /dev/null; then
     LOGI "zsh解释器未安装，开始安装..."
     if [[ x"${RELEASE}" == x"centos" ]]; then
-        yum install -q  -y zsh
-        yum install -q  -y wget git tar vim fd-find ripgrep util-linux-user
+        sudo yum install -q  -y zsh
     else
-        apt install -qq -y zsh
-        apt install -qq -y wget git tar vim fd-find ripgrep passwd
+        sudo apt install -qq -y zsh
     fi
 fi
 # 检查zsh是否是默认解释器
 if [ "$SHELL" != "/bin/zsh" ]; then
     LOGI "zsh不是默认的解释器，开始设置为默认..."
-    chsh -s $(which zsh)
+    sudo chsh -s $(which zsh)
 fi
 
 LOGI "安装常用软件包..."
 if [[ x"${RELEASE}" == x"centos" ]]; then
-    yum install -q  -y wget git tar vim fd-find ripgrep util-linux-user
+    sudo yum install -q  -y wget git tar vim fd-find ripgrep util-linux-user
 else
-    apt install -qq -y wget git tar vim fd-find ripgrep passwd
+    sudo apt install -qq -y wget git tar vim fd-find ripgrep passwd
 fi
 
 # 非本地模式才进一步配置
@@ -136,8 +134,8 @@ if [[ $MODE -ne 0 ]]; then
 
 fi
 
-LOGI "开始设置时区..."
-timedatectl set-timezone Asia/Shanghai
+#LOGI "开始设置时区..."
+#timedatectl set-timezone Asia/Shanghai
 
 LOGI "开始设置git..."
 setup_git
