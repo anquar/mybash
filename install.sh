@@ -79,7 +79,7 @@ if [[ $MODE -ne 0 ]]; then
             cd ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/plugins/${plugin} && git pull
         else
             if [[ $MODE -eq 1 ]]; then
-                git clone --depth=1 https://hub.fgit.cf/zsh-users/${plugin}.git ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/plugins/${plugin}
+                git clone --depth=1 https://gitclone.com/github.com/zsh-users/${plugin}.git ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/plugins/${plugin}
             else
                 git clone --depth=1 https://github.com/zsh-users/${plugin}.git ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/plugins/${plugin}
             fi
@@ -90,7 +90,7 @@ if [[ $MODE -ne 0 ]]; then
     fonts=("MesloLGS%20NF%20Regular.ttf" "MesloLGS%20NF%20Bold.ttf" "MesloLGS%20NF%20Italic.ttf" "MesloLGS%20NF%20Bold%20Italic.ttf")
     for font in "${fonts[@]}"; do
         if [[ $MODE -eq 1 ]]; then
-            wget -q -N https://raw.fgit.cf/romkatv/powerlevel10k-media/raw/master/${font} -P ~/.fonts/
+            wget -q -N https://gitclone.com/github.com/romkatv/powerlevel10k-media/raw/master/${font} -P ~/.fonts/
         else
             wget -q -N https://github.com/romkatv/powerlevel10k-media/raw/master/${font} -P ~/.fonts/
         fi
@@ -102,23 +102,25 @@ if [[ $MODE -ne 0 ]]; then
         cd ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/themes/powerlevel10k && git pull
     else
         if [[ $MODE -eq 1 ]]; then
-            git clone --depth=1 https://hub.fgit.cf/romkatv/powerlevel10k.git ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/themes/powerlevel10k
+            git clone --depth=1 https://gitclone.com/github.com/romkatv/powerlevel10k.git ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/themes/powerlevel10k
         else
             git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/themes/powerlevel10k
         fi
     fi
 
-    LOGI "开始安装插件 fzf ..."
-    if [ -d ${ZSH_CONFIG_PATH}/fzf ]; then
-        cd ${ZSH_CONFIG_PATH}/fzf && git pull
-        ${ZSH_CONFIG_PATH}/fzf/install --all --key-bindings --completion --no-update-rc
-    else
-        if [[ $MODE -eq 1 ]]; then
-            git clone --depth 1 https://hub.fgit.cf/junegunn/fzf.git ${ZSH_CONFIG_PATH}/fzf
+    if [[ $MODE -eq 2 ]]; then
+        LOGI "开始安装插件 fzf ..."
+        if [ -d ${ZSH_CONFIG_PATH}/fzf ]; then
+            cd ${ZSH_CONFIG_PATH}/fzf && git pull
+            ${ZSH_CONFIG_PATH}/fzf/install --all --key-bindings --completion --no-update-rc
         else
-            git clone --depth 1 https://github.com/junegunn/fzf.git ${ZSH_CONFIG_PATH}/fzf
+            if [[ $MODE -eq 1 ]]; then
+                git clone --depth 1 https://gitclone.com/github.com/junegunn/fzf.git ${ZSH_CONFIG_PATH}/fzf
+            else
+                git clone --depth 1 https://github.com/junegunn/fzf.git ${ZSH_CONFIG_PATH}/fzf
+            fi
+            ${ZSH_CONFIG_PATH}/fzf/install --all --key-bindings --completion --no-update-rc
         fi
-        ${ZSH_CONFIG_PATH}/fzf/install --all --key-bindings --completion --no-update-rc
     fi
 
     LOGI "开始安装插件 k ..."
@@ -126,7 +128,7 @@ if [[ $MODE -ne 0 ]]; then
         cd ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/plugins/k && git pull
     else
         if [[ $MODE -eq 1 ]]; then
-            git clone --depth 1 https://hub.fgit.cf/supercrabtree/k ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/plugins/k
+            git clone --depth 1 https://gitclone.com/github.com/supercrabtree/k ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/plugins/k
         else
             git clone --depth 1 https://github.com/supercrabtree/k ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/plugins/k
         fi
