@@ -1,15 +1,15 @@
 ################# DO NOT MODIFY THIS FILE ###################
-#### PLACE YOUR CONFIGS IN ~/.config/muyz/zshrc FOLDER ######
+#### PLACE YOUR CONFIGS IN ~/.config/zsh/zshrc FOLDER ######
 #############################################################
 
 # Your original .zshrc is backed up at ~/.zshrc-backup-%y-%m-%d
 
 
 # Load zsh configurations
-source "$HOME/.config/muyz/config.zsh"
+source "$HOME/.config/zsh/config.zsh"
 
 # Place all of your personal configurations over there
-ZSH_CONFIGS_DIR="$HOME/.config/muyz/zshrc"
+ZSH_CONFIGS_DIR="$HOME/.config/zsh/zshrc"
 
 if [ "$(ls -A $ZSH_CONFIGS_DIR)" ]; then
     for file in "$ZSH_CONFIGS_DIR"/*; do

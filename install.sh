@@ -1,92 +1,143 @@
 #!/bin/bash
 
-red='\033[0;31m'
-green='\033[0;32m'
-yellow='\033[0;33m'
-plain='\033[0m'
+source ./support/base.sh
+source ./support/func.sh
 
-function LOGW() {
-    echo -e "${yellow}[W] $* ${plain}"
-}
+RELEASE=$(check_os)
+NETSTATUS=$(check_network)
 
-function LOGE() {
-    echo -e "${red}[E] $* ${plain}"
-}
-
-function LOGI() {
-    echo -e "${green}[I] $* ${plain}"
-}
-
-LOGI "Configuration starts!"
-
-# check os
-LOGI "Checking os-release ..."
-if [[ -f /etc/redhat-release ]]; then
-    release="centos"
-elif cat /etc/issue | grep -Eqi "debian"; then
-    release="debian"
-elif cat /etc/issue | grep -Eqi "ubuntu"; then
-    release="ubuntu"
-elif cat /etc/issue | grep -Eqi "centos|red hat|redhat"; then
-    release="centos"
-elif cat /proc/version | grep -Eqi "debian"; then
-    release="debian"
-elif cat /proc/version | grep -Eqi "ubuntu"; then
-    release="ubuntu"
-elif cat /proc/version | grep -Eqi "centos|red hat|redhat"; then
-    release="centos"
+# 根据网络情况选择执行模式
+if [[ $NETSTATUS -eq 0 ]]; then
+    if ask_user "无任何网络连接，是否继续执行?"; then
+        echo "好的，我们继续执行"
+    else
+        LOGI "现在退出" && exit
+    fi
+    MODE=0
+elif [[ $NETSTATUS -gt 0 && $NETSTATUS -le 3 ]]; then
+    MODE=1
+elif [[ $NETSTATUS -gt 4 && $NETSTATUS -le 7 ]]; then
+    MODE=2
 else
-    LOGE "System version not detected, stopped running!" && exit 1
+    LOGE "未知的网络状态，现在退出" && exit 1
 fi
 
-
-# check network
-github_access_status=$(curl -s -m 1 -IL github.com | grep 200)
-if [ "$github_access_status" == "" ];then
-    LOGW "The network cannot accesss github, please check it!"
+# 检查zsh是否已安装
+if ! command -v zsh &> /dev/null; then
+    LOGI "zsh解释器未安装，开始安装..."
+    if [[ x"${RELEASE}" == x"centos" ]]; then
+        yum install -q  -y zsh
+        yum install -q  -y wget git tar vim fd-find ripgrep util-linux-user
+    else
+        apt install -qq -y zsh
+        apt install -qq -y wget git tar vim fd-find ripgrep passwd
+    fi
+fi
+# 检查zsh是否是默认解释器
+if [ "$SHELL" != "/bin/zsh" ]; then
+    LOGI "zsh不是默认的解释器，开始设置为默认..."
+    chsh -s $(which zsh)
 fi
 
+LOGI "安装常用软件包..."
+if [[ x"${RELEASE}" == x"centos" ]]; then
+    yum install -q  -y wget git tar vim fd-find ripgrep util-linux-user
+else
+    apt install -qq -y wget git tar vim fd-find ripgrep passwd
+fi
 
-install_tool() {
-    LOGI "Installing tools ..."
-    if [[ x"${release}" == x"centos" ]]; then
-        yum install -q wget git tar vim fd-find ripgrep util-linux-user -y
+# 非本地模式才进一步配置
+if [[ $MODE -ne 0 ]]; then
+    if mv -n ~/.zshrc ~/.zshrc-backup-$(date +"%Y-%m-%d"); then
+        LOGI "已将当前 .zshrc 备份到 .zshrc-backup-date"
+    fi
+
+    ZSH_CONFIG_PATH="$HOME/.config/zsh"
+    mkdir -p ${ZSH_CONFIG_PATH}
+    mkdir -p ${ZSH_CONFIG_PATH}/zshrc
+    mkdir -p ~/.cache/zsh/
+    LOGI "zsh配置路径为${ZSH_CONFIG_PATH}"
+    cp -f .zshrc ~/
+    cp -f config.zsh ${ZSH_CONFIG_PATH}/
+
+    LOGI "开始安装 oh-my-zsh ..."
+    if [ -d ${ZSH_CONFIG_PATH}/oh-my-zsh ]; then
+        cd ${ZSH_CONFIG_PATH}/oh-my-zsh && git pull
     else
-        apt install -qq wget git tar vim fd-find ripgrep passwd -y
-    fi
-}
-
-setup_vim() {
-    if ! command -v git >/dev/null 2>&1; then
-        LOGW "Git is not installed, cannot setup vim!"
-        return 1
+       if [[ $MODE -eq 1 ]]; then
+           git clone --depth=1 https://gitee.com/mirrors/oh-my-zsh.git ${ZSH_CONFIG_PATH}/oh-my-zsh
+       else
+           git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git ${ZSH_CONFIG_PATH}/oh-my-zsh
+       fi
     fi
 
-    LOGI "Setting vim ..."
-    if [ -d ~/.vim_runtime ]; then
-        cd ~/.vim_runtime && git pull
+    plugins=("zsh-autosuggestions" "zsh-syntax-highlighting" "zsh-completions" "zsh-history-substring-search")
+
+    for plugin in "${plugins[@]}"; do
+        LOGI "开始安装 oh-my-zsh 插件 ${plugin} ..."
+        if [ -d ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/plugins/${plugin} ]; then
+            cd ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/plugins/${plugin} && git pull
+        else
+            if [[ $MODE -eq 1 ]]; then
+                git clone --depth=1 https://hub.fgit.cf/zsh-users/${plugin}.git ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/plugins/${plugin}
+            else
+                git clone --depth=1 https://github.com/zsh-users/${plugin}.git ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/plugins/${plugin}
+            fi
+        fi
+    done
+
+    LOGI "开始安装字体..."
+    fonts=("MesloLGS%20NF%20Regular.ttf" "MesloLGS%20NF%20Bold.ttf" "MesloLGS%20NF%20Italic.ttf" "MesloLGS%20NF%20Bold%20Italic.ttf")
+    for font in "${fonts[@]}"; do
+        if [[ $MODE -eq 1 ]]; then
+            wget -q -N https://raw.fgit.cf/romkatv/powerlevel10k-media/raw/master/${font} -P ~/.fonts/
+        else
+            wget -q -N https://github.com/romkatv/powerlevel10k-media/raw/master/${font} -P ~/.fonts/
+        fi
+    done
+    fc-cache -fv ~/.fonts
+
+    LOGI "开始安装主题..."
+    if [ -d ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/themes/powerlevel10k ]; then
+        cd ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/themes/powerlevel10k && git pull
     else
-        git clone -b basic git@gitee.com:wuaq/vimcan.git ~/.vim_runtime
+        if [[ $MODE -eq 1 ]]; then
+            git clone --depth=1 https://hub.fgit.cf/romkatv/powerlevel10k.git ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/themes/powerlevel10k
+        else
+            git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/themes/powerlevel10k
+        fi
     fi
-    sh ~/.vim_runtime/install.sh
-}
 
-setup_git() {
-    LOGI "Setting git global config ..."
-    git config --global core.editor "vim"
-    git config --global pull.rebase true
-    git config --global user.email "wuaqcn@qq.com"
-    git config --global user.name "muyz"
-}
+    LOGI "开始安装插件 fzf ..."
+    if [ -d ${ZSH_CONFIG_PATH}/fzf ]; then
+        cd ${ZSH_CONFIG_PATH}/fzf && git pull
+        ${ZSH_CONFIG_PATH}/fzf/install --all --key-bindings --completion --no-update-rc
+    else
+        if [[ $MODE -eq 1 ]]; then
+            git clone --depth 1 https://hub.fgit.cf/junegunn/fzf.git ${ZSH_CONFIG_PATH}/fzf
+        else
+            git clone --depth 1 https://github.com/junegunn/fzf.git ${ZSH_CONFIG_PATH}/fzf
+        fi
+        ${ZSH_CONFIG_PATH}/fzf/install --all --key-bindings --completion --no-update-rc
+    fi
 
-setup_more() {
-    LOGI "Setting timezone ..."
-    timedatectl set-timezone Asia/Shanghai
-}
+    LOGI "开始安装插件 k ..."
+    if [ -d ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/plugins/k ]; then
+        cd ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/plugins/k && git pull
+    else
+        if [[ $MODE -eq 1 ]]; then
+            git clone --depth 1 https://hub.fgit.cf/supercrabtree/k ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/plugins/k
+        else
+            git clone --depth 1 https://github.com/supercrabtree/k ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/plugins/k
+        fi
+    fi
 
-install_tool
-setup_vim
+fi
+
+LOGI "开始设置时区..."
+timedatectl set-timezone Asia/Shanghai
+
+LOGI "开始设置git..."
 setup_git
-setup_more
-LOGI "Configuration completed!" && exit
-
+LOGI "开始设置vim..."
+setup_vim
