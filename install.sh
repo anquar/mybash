@@ -32,7 +32,7 @@ if ! command -v zsh &> /dev/null; then
     fi
 fi
 # 检查zsh是否是默认解释器
-if [ "$SHELL" != "/bin/zsh" ]; then
+if [ "$SHELL" != `which zsh` ]; then
     LOGI "zsh不是默认的解释器，开始设置为默认..."
     sudo chsh -s $(which zsh)
 fi
@@ -83,17 +83,6 @@ if [[ $MODE -ne 0 ]]; then
             fi
         fi
     done
-
-    LOGI "开始安装字体..."
-    fonts=("MesloLGS%20NF%20Regular.ttf" "MesloLGS%20NF%20Bold.ttf" "MesloLGS%20NF%20Italic.ttf" "MesloLGS%20NF%20Bold%20Italic.ttf")
-    for font in "${fonts[@]}"; do
-        if [[ $MODE -eq 1 ]]; then
-            wget -q -N https://gitclone.com/github.com/romkatv/powerlevel10k-media/raw/master/${font} -P ~/.fonts/
-        else
-            wget -q -N https://github.com/romkatv/powerlevel10k-media/raw/master/${font} -P ~/.fonts/
-        fi
-    done
-    fc-cache -fv ~/.fonts
 
     LOGI "开始安装主题..."
     if [ -d ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/themes/powerlevel10k ]; then
