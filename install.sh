@@ -27,12 +27,14 @@ if ! command -v zsh &> /dev/null; then
     LOGI "zsh解释器未安装，开始安装..."
     if [[ x"${RELEASE}" == x"centos" ]]; then
         sudo yum install -q  -y zsh
+        # 通过编译安装zsh
+        # compile_install_zsh
     else
         sudo apt install -qq -y zsh
     fi
 fi
 # 检查zsh是否是默认解释器
-if [ "$SHELL" != `which zsh` ]; then
+if [ $(basename "$SHELL") != "zsh" ]; then
     LOGI "zsh不是默认的解释器，开始设置为默认..."
     sudo chsh -s $(which zsh)
 fi
