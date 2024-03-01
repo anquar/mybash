@@ -83,7 +83,7 @@ function setup_vim() {
     if [ -d ~/.vim_runtime ]; then
         cd ~/.vim_runtime && git pull
     else
-        git clone -b basic git@gitee.com:wuaq/vimcan.git ~/.vim_runtime
+        git clone git@gitee.com:wuaq/vimcan.git ~/.vim_runtime
     fi
     sh ~/.vim_runtime/install.sh
 }
