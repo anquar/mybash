@@ -80,12 +80,12 @@ function setup_vim() {
         return 1
     fi
 
-    if [ -d ~/.vim_runtime ]; then
-        cd ~/.vim_runtime && git pull
+    if [ -d ~/.vim ]; then
+        cd ~/.vim && git pull
     else
-        git clone git@gitee.com:wuaq/vimcan.git ~/.vim_runtime
+        git clone git@gitee.com:wuaq/vimcan.git ~/.vim
     fi
-    sh ~/.vim_runtime/install.sh
+    sh ~/.vim/install.sh
 }
 
 # 编译安装zsh
