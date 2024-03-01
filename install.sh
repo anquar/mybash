@@ -22,28 +22,39 @@ else
     LOGE "未知的网络状态，现在退出" && exit 1
 fi
 
+# 设置安装命令
+PKG_INSTALL_CMD=''
+if [[ x"${RELEASE}" == x"centos" && -x "$(command -v yum)" ]]; then
+    PKG_INSTALL_CMD="yum install -q -y"
+elif [[ -x "$(command -v apt)" ]]; then
+    PKG_INSTALL_CMD="apt install -qq -y"
+else
+    LOGE "无法确定包管理器" && exit 1
+fi
+if [[ $(id -u) -ne 0 ]]; then
+    PKG_INSTALL_CMD="sudo ${PKG_INSTALL_CMD}"
+fi
+
 # 检查zsh是否已安装
 if ! command -v zsh &> /dev/null; then
     LOGI "zsh解释器未安装，开始安装..."
-    if [[ x"${RELEASE}" == x"centos" ]]; then
-        sudo yum install -q  -y zsh
-        # 通过编译安装zsh
-        # compile_install_zsh
-    else
-        sudo apt install -qq -y zsh
-    fi
+    $PKG_INSTALL_CMD zsh
 fi
 # 检查zsh是否是默认解释器
 if [ $(basename "$SHELL") != "zsh" ]; then
     LOGI "zsh不是默认的解释器，开始设置为默认..."
-    sudo chsh -s $(which zsh)
+    if [[ $(id -u) -eq 0 ]]; then
+	chsh -s $(which zsh)
+    else
+        sudo chsh -s $(which zsh)
+    fi
 fi
 
 LOGI "安装常用软件包..."
 if [[ x"${RELEASE}" == x"centos" ]]; then
-    sudo yum install -q  -y wget git tar vim fd-find ripgrep util-linux-user
+    $PKG_INSTALL_CMD curl wget git tar vim fd-find ripgrep util-linux-user
 else
-    sudo apt install -qq -y wget git tar vim fd-find ripgrep passwd
+    $PKG_INSTALL_CMD curl wget git tar vim fd-find ripgrep passwd
 fi
 
 # 非本地模式才进一步配置
