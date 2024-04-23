@@ -137,7 +137,7 @@ if [[ $MODE -ne 0 ]]; then
 fi
 
 #LOGI "开始设置时区..."
-#timedatectl set-timezone Asia/Shanghai
+timedatectl set-timezone Asia/Shanghai
 
 LOGI "开始设置git..."
 setup_git
