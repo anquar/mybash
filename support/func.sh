@@ -5,24 +5,32 @@
 # 检查系统类型
 function check_os() {
     local release=""
-    if [[ -f /etc/redhat-release ]]; then
-        release="centos"
-    elif cat /etc/issue | grep -Eqi "debian"; then
-        release="debian"
-    elif cat /etc/issue | grep -Eqi "ubuntu"; then
-        release="ubuntu"
-    elif cat /etc/issue | grep -Eqi "centos|red hat|redhat"; then
-        release="centos"
-    elif cat /proc/version | grep -Eqi "debian"; then
-        release="debian"
-    elif cat /proc/version | grep -Eqi "ubuntu"; then
-        release="ubuntu"
-    elif cat /proc/version | grep -Eqi "centos|red hat|redhat"; then
-        release="centos"
+    # 从 /etc/os-release 文件中读取 ID_LIKE 字段的值
+    local id_like=$(grep '^ID_LIKE=' /etc/os-release | cut -d'=' -f2)
+
+    # 如果存在 ID_LIKE 字段，则返回第一个类型
+    if [ -n "$id_like" ]; then
+        release=$(echo "$id_like" | cut -d' ' -f1)
     else
-        LOGE "System version not detected, stopped running!" && exit 1
+        # 否则，从 ID 字段获取系统类型
+        release=$(grep '^ID=' /etc/os-release | cut -d'=' -f2)
     fi
-    echo $release
+    echo $release | tr -d '"'
+}
+
+# 检查系统类型
+function check_package_manager() {
+    local package_manager=""
+    # 检查 apt 是否存在
+    if [ -x "$(command -v apt)" ]; then
+        package_manager="apt"
+    elif [ -x "$(command -v yum)" ]; then
+        # 检查 yum 是否存在
+        package_manager="yum"
+    else
+        package_manager="unknown"
+    fi
+    echo $package_manager
 }
 
 # 检查网络连接情况

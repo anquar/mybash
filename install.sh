@@ -4,6 +4,7 @@ source ./support/base.sh
 source ./support/func.sh
 
 RELEASE=$(check_os)
+PKG_MANAGER=$(check_package_manager)
 NETSTATUS=$(check_network)
 
 # 根据网络情况选择执行模式
@@ -24,9 +25,9 @@ fi
 
 # 设置安装命令
 PKG_INSTALL_CMD=''
-if [[ x"${RELEASE}" == x"centos" && -x "$(command -v yum)" ]]; then
+if [[ x"${PKG_MANAGER}" == x"yum" ]]; then
     PKG_INSTALL_CMD="yum install -q -y"
-elif [[ -x "$(command -v apt)" ]]; then
+elif [[ x"${PKG_MANAGER}" == x"apt" ]]; then
     PKG_INSTALL_CMD="apt install -qq -y"
 else
     LOGE "无法确定包管理器" && exit 1
@@ -51,11 +52,20 @@ if [ $(basename "$SHELL") != "zsh" ]; then
 fi
 
 LOGI "安装常用软件包..."
-if [[ x"${RELEASE}" == x"centos" ]]; then
-    $PKG_INSTALL_CMD curl wget git tar vim fd-find ripgrep util-linux-user
-else
-    $PKG_INSTALL_CMD curl wget git tar vim fd-find ripgrep passwd
-fi
+case "$RELEASE" in
+    "rhel" | "centos" | "anolis")
+        $PKG_INSTALL_CMD curl wget git tar vim fd-find ripgrep util-linux-user
+        ;;
+    "fedora")
+        $PKG_INSTALL_CMD wget git tar vim util-linux-user
+        ;;
+    "debian")
+        $PKG_INSTALL_CMD curl wget git tar vim fd-find ripgrep passwd
+        ;;
+    *)
+        LOGW "未知的操作系统($RELEASE)，跳过软件安装"
+        ;;
+esac
 
 # 非本地模式才进一步配置
 if [[ $MODE -ne 0 ]]; then
