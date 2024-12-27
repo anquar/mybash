@@ -191,11 +191,7 @@ install_oh_my_bash() {
     if [ -d ~/.oh-my-bash ]; then
         cd ~/.oh-my-bash && git pull
     else
-        if [[ $MODE -eq 1 ]]; then
-            bash -c "$(curl -fsSL https://gitclone.com/github.com/ohmybash/oh-my-bash/raw/master/tools/install.sh)"
-        else
-            bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
-        fi
+        bash -c "$(curl -fsSL https://gitclone.com/github.com/ohmybash/oh-my-bash/raw/master/tools/install.sh)"
     fi
 }
 
