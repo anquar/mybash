@@ -198,7 +198,7 @@ setup_bashrc() {
 
     # 复制配置文件
     LOGI "复制 bash 配置文件..."
-    cp -f config.bash ~/.bashrc
+    cat config.bash > ~/.bashrc
 }
 
 # 配置 zsh
