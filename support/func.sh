@@ -183,12 +183,6 @@ install_bash_plugins() {
         "https://github.com/zdharma-continuum/fast-syntax-highlighting.git" \
         ~/.oh-my-bash/custom/plugins/bash-syntax-highlighting
 
-    # 安装 fzf
-    install_shell_plugin "fzf" \
-        "https://github.com/junegunn/fzf.git" \
-        ~/.oh-my-bash/custom/plugins/fzf
-    ~/.oh-my-bash/custom/plugins/fzf/install --all --key-bindings --completion --no-update-rc
-
     # 配置 bashrc
     setup_bashrc
 }
@@ -259,12 +253,6 @@ install_zsh_plugins() {
     install_shell_plugin "k" \
         "https://github.com/supercrabtree/k" \
         "${ZSH_CONFIG_PATH}/oh-my-zsh/custom/plugins/k"
-
-    # 安装 fzf
-    install_shell_plugin "fzf" \
-        "https://github.com/junegunn/fzf.git" \
-        "${ZSH_CONFIG_PATH}/fzf"
-    ${ZSH_CONFIG_PATH}/fzf/install --all --key-bindings --completion --no-update-rc
 }
 
 # 安装 zsh 主题
