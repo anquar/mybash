@@ -141,8 +141,8 @@ setup_bash() {
     # 安装 oh-my-bash
     install_oh_my_bash
 
-    # 非本地模式才安装插件
-    [[ $MODE -ne 0 ]] && install_bash_plugins
+    # 安装插件
+    install_bash_plugins
 }
 
 # 配置 bash_profile
@@ -183,13 +183,11 @@ install_bash_plugins() {
         "https://github.com/zdharma-continuum/fast-syntax-highlighting.git" \
         ~/.oh-my-bash/custom/plugins/bash-syntax-highlighting
 
-    # 安装 fzf（仅完整模式）
-    if [[ $MODE -eq 2 ]]; then
-        install_shell_plugin "fzf" \
-            "https://github.com/junegunn/fzf.git" \
-            ~/.oh-my-bash/custom/plugins/fzf
-        ~/.oh-my-bash/custom/plugins/fzf/install --all --key-bindings --completion --no-update-rc
-    fi
+    # 安装 fzf
+    install_shell_plugin "fzf" \
+        "https://github.com/junegunn/fzf.git" \
+        ~/.oh-my-bash/custom/plugins/fzf
+    ~/.oh-my-bash/custom/plugins/fzf/install --all --key-bindings --completion --no-update-rc
 
     # 配置 bashrc
     setup_bashrc
@@ -211,7 +209,6 @@ setup_bashrc() {
 
 # 配置 zsh
 setup_zsh() {
-    [[ $MODE -eq 0 ]] && return
     LOGI "当前默认shell是zsh，开始配置..."
 
     # 设置配置目录
@@ -263,13 +260,11 @@ install_zsh_plugins() {
         "https://github.com/supercrabtree/k" \
         "${ZSH_CONFIG_PATH}/oh-my-zsh/custom/plugins/k"
 
-    # 安装 fzf（仅完整模式）
-    if [[ $MODE -eq 2 ]]; then
-        install_shell_plugin "fzf" \
-            "https://github.com/junegunn/fzf.git" \
-            "${ZSH_CONFIG_PATH}/fzf"
-        ${ZSH_CONFIG_PATH}/fzf/install --all --key-bindings --completion --no-update-rc
-    fi
+    # 安装 fzf
+    install_shell_plugin "fzf" \
+        "https://github.com/junegunn/fzf.git" \
+        "${ZSH_CONFIG_PATH}/fzf"
+    ${ZSH_CONFIG_PATH}/fzf/install --all --key-bindings --completion --no-update-rc
 }
 
 # 安装 zsh 主题

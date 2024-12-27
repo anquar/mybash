@@ -7,24 +7,7 @@ source ./support/func.sh
 init_environment() {
     RELEASE=$(check_os)
     PKG_MANAGER=$(check_package_manager)
-    NETSTATUS=$(check_network)
     CURRENT_SHELL=$(basename "$SHELL")
-
-    # 设置网络模式
-    if [[ $NETSTATUS -eq 0 ]]; then
-        if ask_user "无任何网络连接，是否继续执行?"; then
-            echo "好的，我们继续执行"
-        else
-            LOGI "现在退出" && exit
-        fi
-        MODE=0
-    elif [[ $NETSTATUS -gt 0 && $NETSTATUS -le 3 ]]; then
-        MODE=1
-    elif [[ $NETSTATUS -gt 4 && $NETSTATUS -le 7 ]]; then
-        MODE=2
-    else
-        LOGE "未知的网络状态，现在退出" && exit 1
-    fi
 
     # 设置包管理器
     if [[ x"${PKG_MANAGER}" == x"yum" ]]; then
@@ -36,7 +19,7 @@ init_environment() {
     fi
     [[ $(id -u) -ne 0 ]] && PKG_INSTALL_CMD="sudo ${PKG_INSTALL_CMD}"
 
-    export RELEASE PKG_MANAGER MODE PKG_INSTALL_CMD CURRENT_SHELL
+    export RELEASE PKG_MANAGER PKG_INSTALL_CMD CURRENT_SHELL
 }
 
 # 安装基础软件包
