@@ -101,7 +101,7 @@ function setup_vim() {
     fi
 
     if [ -d ~/.vim ]; then
-        cd ~/.vim && git pull
+        cd ~/.vim && git pull && cd -
     else
         git clone git@gitee.com:wuaq/vimcan.git ~/.vim
     fi
@@ -114,7 +114,7 @@ git_clone_or_pull() {
     local target_dir="$2"
 
     if [ -d "$target_dir" ]; then
-        cd "$target_dir" && git pull
+        cd "$target_dir" && git pull && cd -
         return
     fi
 
@@ -162,7 +162,7 @@ setup_bash_profile() {
 # 安装 oh-my-bash
 install_oh_my_bash() {
     if [ -d ~/.oh-my-bash ]; then
-        cd ~/.oh-my-bash && git pull
+        cd ~/.oh-my-bash && git pull && cd -
     else
         bash -c "$(curl -fsSL https://ghub.wio.xyz/github.com/ohmybash/oh-my-bash/raw/master/tools/install.sh)"
     fi
@@ -228,7 +228,7 @@ setup_zsh() {
 install_oh_my_zsh() {
     LOGI "开始安装 oh-my-zsh ..."
     if [ -d ${ZSH_CONFIG_PATH}/oh-my-zsh ]; then
-        cd ${ZSH_CONFIG_PATH}/oh-my-zsh && git pull
+        cd ${ZSH_CONFIG_PATH}/oh-my-zsh && git pull && cd -
     else
         git clone --depth=1 "https://github.com/ohmyzsh/ohmyzsh.git" ${ZSH_CONFIG_PATH}/oh-my-zsh
     fi
