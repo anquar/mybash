@@ -66,27 +66,6 @@ function check_prerequisites() {
     return 0
 }
 
-# 检查网络连接情况
-# [0] = 国内
-# [1] = 国外
-# [2] = github
-function check_network() {
-    local network=0
-    ping -c 1 github.com > /dev/null
-    if [ $? -eq 0 ]; then
-        network=$((network + 4))
-    fi
-    ping -c 1 google.com > /dev/null
-    if [ $? -eq 0 ]; then
-        network=$((network + 2))
-    fi
-    ping -c 1 baidu.com > /dev/null
-    if [ $? -eq 0 ]; then
-        network=$((network + 1))
-    fi
-    echo $network
-}
-
 # 定义询问函数
 function ask_user() {
     local question="$1"
@@ -133,18 +112,13 @@ function setup_vim() {
 git_clone_or_pull() {
     local repo_url="$1"
     local target_dir="$2"
-    local proxy_url="$3"
 
     if [ -d "$target_dir" ]; then
         cd "$target_dir" && git pull
         return
     fi
 
-    if [[ $MODE -eq 1 && -n "$proxy_url" ]]; then
-        git clone --depth=1 "$proxy_url" "$target_dir"
-    else
-        git clone --depth=1 "$repo_url" "$target_dir"
-    fi
+    git clone --depth=1 "${repo_url/github.com/ghub.wio.xyz\/github.com}" "$target_dir"
 }
 
 # 安装 shell 插件
@@ -152,10 +126,9 @@ install_shell_plugin() {
     local plugin_name="$1"
     local repo_url="$2"
     local target_dir="$3"
-    local proxy_url="${4:-${repo_url/github.com/gitclone.com\/github.com}}"
 
     LOGI "开始安装插件 ${plugin_name} ..."
-    git_clone_or_pull "$repo_url" "$target_dir" "$proxy_url"
+    git_clone_or_pull "$repo_url" "$target_dir"
 }
 
 # 配置 bash
@@ -191,7 +164,7 @@ install_oh_my_bash() {
     if [ -d ~/.oh-my-bash ]; then
         cd ~/.oh-my-bash && git pull
     else
-        bash -c "$(curl -fsSL https://gitclone.com/github.com/ohmybash/oh-my-bash/raw/master/tools/install.sh)"
+        bash -c "$(curl -fsSL https://ghub.wio.xyz/github.com/ohmybash/oh-my-bash/raw/master/tools/install.sh)"
     fi
 }
 
@@ -266,11 +239,7 @@ install_oh_my_zsh() {
     if [ -d ${ZSH_CONFIG_PATH}/oh-my-zsh ]; then
         cd ${ZSH_CONFIG_PATH}/oh-my-zsh && git pull
     else
-        if [[ $MODE -eq 1 ]]; then
-            git clone --depth=1 https://gitee.com/mirrors/oh-my-zsh.git ${ZSH_CONFIG_PATH}/oh-my-zsh
-        else
-            git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git ${ZSH_CONFIG_PATH}/oh-my-zsh
-        fi
+        git clone --depth=1 "https://github.com/ohmyzsh/ohmyzsh.git" ${ZSH_CONFIG_PATH}/oh-my-zsh
     fi
 }
 
