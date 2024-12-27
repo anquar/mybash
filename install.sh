@@ -23,7 +23,7 @@ else
     LOGE "未知的网络状态，现在退出" && exit 1
 fi
 
-# 设置安装命令
+# 设置安装命令，静默安装
 PKG_INSTALL_CMD=''
 if [[ x"${PKG_MANAGER}" == x"yum" ]]; then
     PKG_INSTALL_CMD="yum install -q -y"
@@ -35,6 +35,22 @@ fi
 if [[ $(id -u) -ne 0 ]]; then
     PKG_INSTALL_CMD="sudo ${PKG_INSTALL_CMD}"
 fi
+
+LOGI "安装常用软件包..."
+case "$RELEASE" in
+    "rhel" | "centos" | "anolis")
+        $PKG_INSTALL_CMD curl tar vim fd-find ripgrep util-linux-user
+        ;;
+    "fedora")
+        $PKG_INSTALL_CMD tar vim util-linux-user
+        ;;
+    "debian")
+        $PKG_INSTALL_CMD curl tar vim fd-find ripgrep passwd
+        ;;
+    *)
+        LOGW "未知的操作系统($RELEASE)，跳过软件安装"
+        ;;
+esac
 
 # 检查zsh是否已安装
 if ! command -v zsh &> /dev/null; then
@@ -50,22 +66,6 @@ if [ $(basename "$SHELL") != "zsh" ]; then
         sudo chsh -s $(which zsh)
     fi
 fi
-
-LOGI "安装常用软件包..."
-case "$RELEASE" in
-    "rhel" | "centos" | "anolis")
-        $PKG_INSTALL_CMD curl wget git tar vim fd-find ripgrep util-linux-user
-        ;;
-    "fedora")
-        $PKG_INSTALL_CMD wget git tar vim util-linux-user
-        ;;
-    "debian")
-        $PKG_INSTALL_CMD curl wget git tar vim fd-find ripgrep passwd
-        ;;
-    *)
-        LOGW "未知的操作系统($RELEASE)，跳过软件安装"
-        ;;
-esac
 
 # 非本地模式才进一步配置
 if [[ $MODE -ne 0 ]]; then

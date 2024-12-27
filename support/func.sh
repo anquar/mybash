@@ -18,7 +18,7 @@ function check_os() {
     echo $release | tr -d '"'
 }
 
-# 检查系统类型
+# 检查包管理器
 function check_package_manager() {
     local package_manager=""
     # 检查 apt 是否存在
@@ -28,9 +28,42 @@ function check_package_manager() {
         # 检查 yum 是否存在
         package_manager="yum"
     else
-        package_manager="unknown"
+        LOGE "未知的包管理器" && exit 1
     fi
     echo $package_manager
+}
+
+# 检查先决条件：wget和git是否安装
+# 如果没有安装，则安装
+function check_prerequisites() {
+    local prerequisites=("wget" "git")
+    local missing_pkgs=()
+
+    # 检查每个必需的包是否已安装
+    for pkg in "${prerequisites[@]}"; do
+        if ! command -v $pkg >/dev/null 2>&1; then
+            missing_pkgs+=($pkg)
+        fi
+    done
+
+    # 如果有缺失的包,则安装
+    PKG_MANAGER=$(check_package_manager)
+    # 更新包管理器，检查是否是root
+    if [[ $(id -u) -ne 0 ]]; then
+        sudo $PKG_MANAGER update -y
+    else
+        $PKG_MANAGER update -y
+    fi
+    if [ ${#missing_pkgs[@]} -ne 0 ]; then
+        LOGI "开始安装缺失的依赖包: ${missing_pkgs[*]}"
+        if [[ $(id -u) -eq 0 ]]; then
+            $PKG_MANAGER install -y ${missing_pkgs[@]}
+        else
+            sudo $PKG_MANAGER install -y ${missing_pkgs[@]}
+        fi
+    fi
+
+    return 0
 }
 
 # 检查网络连接情况
@@ -95,37 +128,3 @@ function setup_vim() {
     fi
     sh ~/.vim/install.sh
 }
-
-# 编译安装zsh
-function compile_install_zsh() {
-    # 安装必要的编译工具和依赖项
-    sudo yum install -y git gcc make autoconf ncurses-devel
-
-    # 克隆Zsh源代码仓库
-    git clone https://github.com/zsh-users/zsh.git
-
-    # 切换到Zsh源代码目录
-    cd zsh
-
-    # 检查并选择要安装的Zsh版本
-    git tag -l
-
-    # 选择特定版本并检出代码
-    git checkout -b zsh-5.8.1 zsh-5.8.1
-
-    # 生成编译脚本
-    ./Util/preconfig
-
-    # 运行配置脚本
-    ./configure
-
-    # 编译Zsh
-    make
-
-    # 安装Zsh
-    sudo make install
-
-    # 将Zsh设置为默认Shell
-    sudo chsh -s `which zsh`
-}
-
