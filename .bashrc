@@ -14,9 +14,7 @@ plugins=(
 )
 
 # 如果安装了 fzf，则加载它
-if [ -f ~/.oh-my-bash/custom/plugins/fzf/fzf.bash ]; then
-    source ~/.oh-my-bash/custom/plugins/fzf/fzf.bash
-fi
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 # 加载 oh-my-bash
 source "$OSH/oh-my-bash.sh"
