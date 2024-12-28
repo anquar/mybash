@@ -96,7 +96,7 @@ function setup_git() {
     # 设置git用户名
     git config --global user.name "wuaq"
     # 设置git拉取时使用ghub.wio.xyz代替github.com
-    git config --global url."https://ghub.wio.xyz/github.com".insteadOf "https://github.com/"
+    git config --global url."https://ghub.wio.xyz/github.com/".insteadOf "https://github.com/"
 }
 
 # 设置vim
@@ -124,7 +124,7 @@ git_clone_or_pull() {
         return
     fi
 
-    git clone --depth=1 "${repo_url/github.com/ghub.wio.xyz\/github.com}" "$target_dir"
+    git clone --depth=1 "$repo_url" "$target_dir"
 }
 
 # 安装 shell 插件
@@ -265,7 +265,7 @@ install_zsh_plugins() {
     install_shell_plugin "fzf" \
         "https://github.com/junegunn/fzf.git" \
         "${ZSH_CONFIG_PATH}/oh-my-zsh/custom/plugins/fzf"
-    ${ZSH_CONFIG_PATH}/custom/plugins/fzf/install --all --key-bindings --completion --no-update-rc
+    ${ZSH_CONFIG_PATH}/oh-my-zsh/custom/plugins/fzf/install --all --key-bindings --completion --no-update-rc
 
     # 安装 k 插件
     install_shell_plugin "k" \
