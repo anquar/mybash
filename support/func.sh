@@ -87,16 +87,22 @@ function ask_user() {
 
 # 设置git
 function setup_git() {
+    # 设置git编辑器为vim
     git config --global core.editor "vim"
+    # 设置git拉取时使用rebase
     git config --global pull.rebase true
+    # 设置git用户邮箱
     git config --global user.email "wuaqcn@qq.com"
+    # 设置git用户名
     git config --global user.name "wuaq"
+    # 设置git拉取时使用ghub.wio.xyz代替github.com
+    git config --global url."https://ghub.wio.xyz/github.com".insteadOf "https://github.com/"
 }
 
 # 设置vim
 function setup_vim() {
     if ! command -v git >/dev/null 2>&1; then
-        LOGW "Git没有安装，不能设置vim!"
+        LOGW "Git没有安装, 无法设置vim!"
         return 1
     fi
 
@@ -133,8 +139,6 @@ install_shell_plugin() {
 
 # 配置 bash
 setup_bash() {
-    LOGI "当前默认shell是bash，开始配置..."
-
     # 配置 bash_profile
     setup_bash_profile
 
@@ -161,6 +165,7 @@ setup_bash_profile() {
 
 # 安装 oh-my-bash
 install_oh_my_bash() {
+    LOGI "开始安装 oh-my-bash ..."
     if [ -d ~/.oh-my-bash ]; then
         (cd ~/.oh-my-bash && git pull)
     else
@@ -173,16 +178,17 @@ install_bash_plugins() {
     LOGI "开始安装 oh-my-bash 插件..."
     mkdir -p ~/.oh-my-bash/custom/plugins
 
-    # 安装自动补全
-    install_shell_plugin "bash-autosuggestions" \
-        "https://github.com/akinomyoga/ble.sh.git" \
-        ~/.oh-my-bash/custom/plugins/bash-autosuggestions
+    # 安装 zoxide
+    install_shell_plugin "zoxide" \
+        "https://github.com/ajeetdsouza/zoxide.git" \
+        ~/.oh-my-bash/custom/plugins/zoxide
 
-    # 安装语法高亮
-    install_shell_plugin "bash-syntax-highlighting" \
-        "https://github.com/zdharma-continuum/fast-syntax-highlighting.git" \
-        ~/.oh-my-bash/custom/plugins/bash-syntax-highlighting
-
+    # 安装 fzf
+    install_shell_plugin "fzf" \
+        "https://github.com/junegunn/fzf.git" \
+        ~/.oh-my-bash/custom/plugins/fzf
+    ~/.oh-my-bash/custom/plugins/fzf/install
+    
     # 配置 bashrc
     setup_bashrc
 }
@@ -197,14 +203,11 @@ setup_bashrc() {
     fi
 
     # 复制配置文件
-    LOGI "复制 bash 配置文件..."
-    cat config.bash > ~/.bashrc
+    cp -f .bshrc ~/
 }
 
 # 配置 zsh
 setup_zsh() {
-    LOGI "当前默认shell是zsh，开始配置..."
-
     # 设置配置目录
     ZSH_CONFIG_PATH="$HOME/.config/zsh"
     mkdir -p ${ZSH_CONFIG_PATH}/{zshrc,cache}
@@ -218,15 +221,16 @@ setup_zsh() {
     cp -f .zshrc ~/
     cp -f config.zsh ${ZSH_CONFIG_PATH}/
 
-    # 安装 oh-my-zsh
+    LOGI "开始安装 oh-my-zsh ..."
     install_oh_my_zsh
+    LOGI "开始安装 zsh 插件 ..."
     install_zsh_plugins
+    LOGI "开始安装 zsh 主题 ..."
     install_zsh_theme
 }
 
 # 安装 oh-my-zsh
 install_oh_my_zsh() {
-    LOGI "开始安装 oh-my-zsh ..."
     if [ -d ${ZSH_CONFIG_PATH}/oh-my-zsh ]; then
         (cd ${ZSH_CONFIG_PATH}/oh-my-zsh && git pull)
     else
