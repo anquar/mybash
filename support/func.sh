@@ -203,7 +203,7 @@ setup_bashrc() {
     fi
 
     # 复制配置文件
-    cp -f .bshrc ~/
+    cp -f .bashrc ~/
 }
 
 # 配置 zsh
