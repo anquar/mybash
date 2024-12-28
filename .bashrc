@@ -56,4 +56,6 @@ ipgeo() {
     else
         curl "http://api.db-ip.com/v2/free/$(myip)"
     fi
+    # 换行
+    echo ""
 }

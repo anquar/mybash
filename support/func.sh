@@ -169,7 +169,7 @@ install_oh_my_bash() {
     if [ -d ~/.oh-my-bash ]; then
         (cd ~/.oh-my-bash && git pull)
     else
-        bash -c "$(curl -fsSL https://ghub.wio.xyz/github.com/ohmybash/oh-my-bash/raw/master/tools/install.sh)"
+        bash -c "$(curl -fsSL https://ghub.wio.xyz/github.com/ohmybash/oh-my-bash/raw/master/tools/install.sh)" && exit 0
     fi
 }
 
@@ -182,12 +182,13 @@ install_bash_plugins() {
     install_shell_plugin "zoxide" \
         "https://github.com/ajeetdsouza/zoxide.git" \
         ~/.oh-my-bash/custom/plugins/zoxide
+    ~/.oh-my-bash/custom/plugins/zoxide/install.sh
 
     # 安装 fzf
     install_shell_plugin "fzf" \
         "https://github.com/junegunn/fzf.git" \
         ~/.oh-my-bash/custom/plugins/fzf
-    ~/.oh-my-bash/custom/plugins/fzf/install --all
+    ~/.oh-my-bash/custom/plugins/fzf/install --all --key-bindings --completion --no-update-rc
     
     # 配置 bashrc
     setup_bashrc
@@ -252,6 +253,12 @@ install_zsh_plugins() {
             "https://github.com/zsh-users/${plugin}.git" \
             "${ZSH_CONFIG_PATH}/oh-my-zsh/custom/plugins/${plugin}"
     done
+
+    # 安装 fzf
+    install_shell_plugin "fzf" \
+        "https://github.com/junegunn/fzf.git" \
+        "${ZSH_CONFIG_PATH}/oh-my-zsh/custom/plugins/fzf"
+    ${ZSH_CONFIG_PATH}/custom/plugins/fzf/install --all --key-bindings --completion --no-update-rc
 
     # 安装 k 插件
     install_shell_plugin "k" \
