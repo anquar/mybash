@@ -15,6 +15,8 @@ plugins=(
 
 # 如果安装了 fzf，则加载它
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+# 设置 PATH
+export PATH=~/.local/bin:$PATH
 
 # 加载 oh-my-bash
 source "$OSH/oh-my-bash.sh"

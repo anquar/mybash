@@ -147,6 +147,12 @@ setup_bash() {
 
     # 安装插件
     install_bash_plugins
+
+    # 配置 bashrc
+    setup_bashrc
+
+    LOGI "完成安装"
+    source ~/.bashrc
 }
 
 # 配置 bash_profile
@@ -169,7 +175,7 @@ install_oh_my_bash() {
     if [ -d ~/.oh-my-bash ]; then
         (cd ~/.oh-my-bash && git pull)
     else
-        bash -c "$(curl -fsSL https://ghub.wio.xyz/github.com/ohmybash/oh-my-bash/raw/master/tools/install.sh)" && exit 0
+        bash -c "$(curl -fsSL https://ghub.wio.xyz/github.com/ohmybash/oh-my-bash/raw/master/tools/install.sh)" --unattended
     fi
 }
 
@@ -189,13 +195,11 @@ install_bash_plugins() {
         "https://github.com/junegunn/fzf.git" \
         ~/.oh-my-bash/custom/plugins/fzf
     ~/.oh-my-bash/custom/plugins/fzf/install --all --key-bindings --completion --no-update-rc
-    
-    # 配置 bashrc
-    setup_bashrc
 }
 
 # 配置 bashrc
 setup_bashrc() {
+    LOGI "设置 .bashrc ..."
     # 备份原有配置
     if [ -f ~/.bashrc ]; then
         if mv -n ~/.bashrc ~/.bashrc-backup-$(date +"%Y-%m-%d"); then
@@ -228,6 +232,9 @@ setup_zsh() {
     install_zsh_plugins
     LOGI "开始安装 zsh 主题 ..."
     install_zsh_theme
+
+    LOGI "完成安装"
+    source ~/.zshrc
 }
 
 # 安装 oh-my-zsh
