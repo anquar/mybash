@@ -187,7 +187,7 @@ install_bash_plugins() {
     install_shell_plugin "fzf" \
         "https://github.com/junegunn/fzf.git" \
         ~/.oh-my-bash/custom/plugins/fzf
-    ~/.oh-my-bash/custom/plugins/fzf/install
+    ~/.oh-my-bash/custom/plugins/fzf/install --all
     
     # 配置 bashrc
     setup_bashrc
