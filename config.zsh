@@ -46,6 +46,10 @@ function speedtest() {
     curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python3 -
 }
 
+function backtrace() {
+    curl https://raw.githubusercontent.com/zhanghanyun/backtrace/main/install.sh -sSf | sh
+}
+
 # Find dictionary definition
 dict() {
     if [ "$3" ]; then
