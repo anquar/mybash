@@ -50,6 +50,10 @@ function backtrace() {
     curl https://raw.githubusercontent.com/zhanghanyun/backtrace/main/install.sh -sSf | sh
 }
 
+function yabs() {
+    curl -sL https://yabs.sh | bash
+}
+
 # Find dictionary definition
 dict() {
     if [ "$3" ]; then
