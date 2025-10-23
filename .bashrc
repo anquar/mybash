@@ -2,7 +2,7 @@
 export OSH=~/.oh-my-bash
 
 # 设置主题
-OSH_THEME="powerline"
+OSH_THEME="powerbash10k"
 
 # 启用插件
 plugins=(
