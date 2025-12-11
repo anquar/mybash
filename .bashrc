@@ -27,7 +27,6 @@ alias la='ls -A'
 alias myip="wget -qO- https://wtfismyip.com/text"
 alias l="ls -lAhrtF"
 alias e="exit"
-alias date='date +"%FT%T%:z"'
 
 # 设置历史记录
 HISTSIZE=10000
@@ -36,6 +35,14 @@ HISTCONTROL=ignoreboth
 shopt -s histappend
 
 # CUSTOM FUNCTIONS
+function date() {
+    if [ $# -eq 0 ]; then
+        command date "+%Y-%m-%d %A %H:%M:%S %Z"
+    else
+        command date "$@"
+    fi
+}
+
 function speedtest() {
     curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python3 -
 }

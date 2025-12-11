@@ -40,9 +40,16 @@ SAVEHIST=50000 #save upto 50,000 lines in history. oh-my-zsh default is 10,000
 alias myip="wget -qO- https://wtfismyip.com/text" # quickly show external ip address
 alias l="ls -lAhrtF" # show all except . .. , sort by recent, / at the end of folders
 alias e="exit"
-alias date='date +"%FT%T%:z"'
 
 # CUSTOM FUNCTIONS
+function date() {
+    if [ $# -eq 0 ]; then
+        command date "+%Y-%m-%d %A %H:%M:%S %Z"
+    else
+        command date "$@"
+    fi
+}
+
 function speedtest() {
     curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python3 -
 }
