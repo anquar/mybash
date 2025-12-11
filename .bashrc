@@ -27,6 +27,7 @@ alias la='ls -A'
 alias myip="wget -qO- https://wtfismyip.com/text"
 alias l="ls -lAhrtF"
 alias e="exit"
+alias date='date +"%FT%T%:z"'
 
 # 设置历史记录
 HISTSIZE=10000
