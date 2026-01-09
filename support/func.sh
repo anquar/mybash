@@ -95,8 +95,10 @@ function setup_git() {
     git config --global user.email "wuaqcn@qq.com"
     # 设置git用户名
     git config --global user.name "wuaq"
-    # 设置git拉取时使用ghub.wio.xyz代替github.com
-    git config --global url."https://ghub.wio.xyz/github.com/".insteadOf "https://github.com/"
+    # 关闭Git的路径转义
+    git config --global core.quotepath false
+    # 设置git拉取镜像
+    git config --global url."https://gh.mmv.cc/github.com/".insteadOf "https://github.com/"
 }
 
 # 设置vim
