@@ -50,7 +50,7 @@ chmod +x setup-bash.sh
 ./setup-bash.sh --silent
 ```
 
-安装完成后，请运行 source ~/.bashrc 或重新登录终端以使配置生效。
+安装完成后，请运行 `source ~/.bashrc` 或重新登录终端以使配置生效。
 
 ## 📦 离线安装指南
 
@@ -58,17 +58,17 @@ chmod +x setup-bash.sh
 
 ### 第一步：制作离线包 (在有网机器上)
 
-使用 -d 参数下载所有依赖资源（Oh My Bash, Vim 插件, 二进制工具包等）：
+使用 `-d` 参数下载所有依赖资源（Oh My Bash, Vim 插件, 二进制工具包等）：
 
 ```bash
 ./setup-bash.sh -d
 ```
 
-执行后，脚本会在当前目录下生成一个名为 bash-assets 的文件夹，其中包含所有安装所需文件。
+执行后，脚本会在当前目录下生成一个名为 `bash-assets` 的文件夹，其中包含所有安装所需文件。
 
 ### 第二步：迁移与安装 (在无网机器上)
 
-1. 将 setup-bash.sh 脚本 和 bash-assets 文件夹 复制到目标机器的同一目录下。
+1. 将 `setup-bash.sh` 脚本 和 `bash-assets` 文件夹 复制到目标机器的同一目录下。
 
 2. 运行安装脚本：
 
@@ -76,7 +76,7 @@ chmod +x setup-bash.sh
 ./setup-bash.sh
 ```
 
-脚本会自动检测到 bash-assets 目录，并优先使用其中的资源进行安装，不会发起网络请求。
+脚本会自动检测到 `bash-assets` 目录，并优先使用其中的资源进行安装，不会发起网络请求。
 
 ## 🗑️ 卸载与还原
 
@@ -90,15 +90,16 @@ chmod +x setup-bash.sh
 
 卸载操作会执行以下清理：
 
-- 删除 ~/.oh-my-bash 目录。
-- 删除 ~/.vim/plugged 插件目录和 plug.vim。
-- 删除 ~/.local/bin 下安装的 fd 和 rg 二进制文件。
-- 自动还原 之前的 ~/.bashrc 和 ~/.vimrc (如果有备份的话)。
+- 删除 `~/.oh-my-bash` 目录。
+- 删除 `~/.vim/plugged` 插件目录和 `plug.vim`。
+- 删除 `~/.local/bin` 下安装的 `fd` 和 `rg` 二进制文件。
+- 自动还原 之前的 `~/.bashrc` 和 `~/.vimrc` (如果有备份的话)。
 
 ## 🛠️ 命令参数说明
 
-参数,长参数,描述
--h,--help,显示帮助信息
--s,--silent,静默模式：不询问用户，默认安装所有组件。
--d,--download,下载模式：仅下载资源到 bash-assets 目录，不进行安装。
--u,--uninstall,卸载模式：移除配置环境并尝试还原备份。
+| 参数 | 长参数      | 描述                                                |
+| ---- | ----------- | --------------------------------------------------- |
+| -h   | --help      | 显示帮助信息                                        |
+| -s   | --silent    | 静默模式：不询问用户，默认安装所有组件              |
+| -d   | -download   | 下载模式：仅下载资源到 bash-assets 目录，不进行安装 |
+| -u   | --uninstall | 移除配置环境并尝试还原备份                          |
