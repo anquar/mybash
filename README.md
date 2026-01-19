@@ -24,6 +24,12 @@
 
 ## 🚀 快速开始
 
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/anquar/mybash/main/setup-bash.sh)
+```
+
+或者
+
 ### 1. 下载脚本
 将 `setup-bash.sh` 保存到本地：
 
