@@ -96,7 +96,7 @@ fi
 # --- 用户自定义配置 (来自 MyBash) ---
 alias ll='ls -la'
 alias la='ls -A'
-alias myip="wget -qO- https://wtfismyip.com/text"
+alias myip="wget -qO- http://ipv4.wtfismyip.com/text"
 alias l="ls -lAhrtF"
 alias e="exit"
 
